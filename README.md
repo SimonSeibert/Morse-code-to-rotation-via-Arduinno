@@ -1,11 +1,11 @@
 # Morse code to rotation via Arduinno
 
-*What is the project*: \n
-This is the source code for a translator, which essentially mimics the setup of the movie *"The Martian"* ([You can take a look at the setup here](https://www.youtube.com/watch?v=k-GH3mbvUro)). \n
+*What is the project*: <br/>
+This is the source code for a translator, which essentially mimics the setup of the movie *"The Martian"* ([You can take a look at the setup here](https://www.youtube.com/watch?v=k-GH3mbvUro)). <br/>
 It's a translator that receives a morse code input and converts it into a servo motor rotation. A semicircle of hexadecimal numbers surrounds the device and the pointer, which is placed on the servo motor, 
 will then point to the corresponding hexadecimal number.
 
-*Hardware*: \n
+*Hardware*: <br/>
 - 1x Arduino Microcontroller (e.g. Arduino Uno)
 - 1x Servo motor attachment for the Arduino
 - 1x Button
@@ -18,7 +18,7 @@ will then point to the corresponding hexadecimal number.
 	- 2x Grounding Cables
 	- 2x Communication Cables
 	
-*Unity Integration*: \n
+*Unity Integration*: <br/>
 The setup is also simulated in unity with a communication-interface (via serial COM Ports) to the arduino and vis versa.
 
  
