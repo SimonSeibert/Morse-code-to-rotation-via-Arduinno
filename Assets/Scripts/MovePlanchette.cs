@@ -11,7 +11,7 @@ public class MovePlanchette : MonoBehaviour
     {
         Transform[] pos =
         {
-            pos_a, pos_b, pos_c, pos_d, pos_e, pos_f, pos_0, pos_1, pos_2, pos_3, pos_4, pos_5, pos_6, pos_7, pos_8, pos_9
+            pos_a, pos_3, pos_b, pos_f, pos_d, pos_e, pos_c, pos_0, pos_1, pos_2, pos_9, pos_4, pos_5, pos_6, pos_7, pos_8
         };
         moveToMultiple(pos);
     }
