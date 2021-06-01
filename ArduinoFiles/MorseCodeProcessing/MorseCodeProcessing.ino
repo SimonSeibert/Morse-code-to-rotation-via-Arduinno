@@ -9,8 +9,8 @@ const int wordSize = 100;
 const int sentenceSize = 100;
 
 int buttonState = 0;              // variable for reading the pushbutton status
-bool wasPressed = false;
-bool firstPress = false;
+bool wasPressed = false;          // Use this bool to see if the button was pressed. After it was pressed it will be put on false. That way the if else part in void loop() will only be executed one time.
+bool firstPress = false;          // See explenation when it is used
 float timestampOnPress = 0;       // timestampOnPress is used to get presstime
 float timestampOnRelease = 0;     // timestampOnRelease is used to get releasetime
 char letterHolder[letterSize];    // Holds current morse code word (e.g. Dash-Dot-Dot). 0 = Dot, 1 = Dash for letters
@@ -33,10 +33,10 @@ void loop() {
   ///////////////////////////////////// PRESS ///////////////////////////////////////
   if (!wasPressed && buttonState == HIGH) {
 
-    timestampOnPress = millis();
+    timestampOnPress = millis(); //Gets time since execution start and current time in ms
 
-    if (firstPress) {
-      float releaseTime = millis() - timestampOnRelease;
+    if (firstPress) { //Ignore the release time between program start and the first press. Only start after the first press was done
+      float releaseTime = millis() - timestampOnRelease; //get release time in ms by subtracting the timestamp from the current time
       Serial.print("Release Time: ");
       Serial.print(releaseTime);
       Serial.print("\n");
@@ -69,9 +69,9 @@ void loop() {
 
       //TODO How shall we handle the times between dash and dot? Right now everything after dot time is registered as dash
       if (pressTime <= dot) {
-        strcat(letterHolder, "0");
+        strcat(letterHolder, "0"); //0 means dot
       } else {
-        strcat(letterHolder, "1");
+        strcat(letterHolder, "1"); //1 means dash  --> Example: "01001" means dot-dash-dot-dot-dash. This will be used in the 'evalLetter()' function
       }
 
       Serial.print("Symbol: ");
@@ -89,11 +89,13 @@ void evalWord() {
   strcat(sentenceHolder, " ");
   //Add word to sentence
   strcat(sentenceHolder, wordHolder);
-  
+
+  //Clear the wordHolder. (Maybe you can remove the for loop as "wordHolder[0] = '\0';" does the same job later.
   for (int i = 1; i < wordSize; i++)
   {
     wordHolder[i] = ' ';
   }
+  //Set the first char in wordHolder to '\0'. That way it's enterpreted as an empty string.
   wordHolder[0] = '\0';
 
   Serial.print("Sentence: ");
@@ -105,11 +107,11 @@ void evalLetter() {
   char letter;
 
   //WIESO KANN MAN IN C KEIN SWITCH STATEMENT MIT STRINGS MACHEN ARRRR
-  if (strcmp(letterHolder, "01") == 0) {
+  if (strcmp(letterHolder, "01") == 0) {                //"01" means "Dot-Dash" which is A
     letter = 'A';
-  } else if (strcmp(letterHolder, "1000") == 0) {
+  } else if (strcmp(letterHolder, "1000") == 0) {       //"1000" means "Dash-Dot-Dot-Dot" which is B
     letter = 'B';
-  } else if (strcmp(letterHolder, "1010") == 0) {
+  } else if (strcmp(letterHolder, "1010") == 0) {       // Do this for all letters
     letter = 'C';
   } else if (strcmp(letterHolder, "100") == 0) {
     letter = 'D';
@@ -179,17 +181,20 @@ void evalLetter() {
     letter = '0';
   } else {
     //ERROR
+    Serial.print("Fehler!! >:( \n");      //A combination that isn't a word. How shall we handle this? Stop the program? Use "?" as a placeholder for "This letter doesn't exist"?
+    letter = '?';
   }
 
   Serial.print("Letter: ");
   Serial.print(letter);
   Serial.print("\n");
 
-  //Clear the letterHolder
+  //Clear the letterHolder. (Maybe you can remove the for loop as "letterHolder[0] = '\0';" does the same job later.
   for (int i = 1; i < letterSize; i++)
   {
     letterHolder[i] = ' ';
   }
+  //Set the first char in letterHolder to '\0'. That way it's enterpreted as an empty string.
   letterHolder[0] = '\0';
 
   //Append char to wordHolder String
