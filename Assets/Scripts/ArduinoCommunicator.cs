@@ -5,6 +5,8 @@ public class ArduinoCommunicator : MonoBehaviour
 {
     public int comPort = 4;
     public int baudRate = 19200;
+    public MovePlanchette move;
+
     SerialPort serial;
     string receivedString;
 
