@@ -30,23 +30,30 @@ void setup() {
 void loop() {
 }
 
+//This function receives a string and outputs the corresponding morse code message
 void morseSentence(char *sentence) {
   int i = 0;
+  //Go through each character until the end is reached (End of string is marked with the char '\0')
   while (sentence[i] != '\0') {
+    //For debugging
     Serial.print("Now morseing letter '"); Serial.print(sentence[i]); Serial.println("'");
+    //Morse the letter
     morse(sentence[i]);
     i++;
   }
 }
 
-//isShort: True is dot, false is dash
+//This function takes a boolean and outputs a morse symbol. True is dot, false is dash
 void blink(bool isShort) {
+  //Dot
   if (isShort) {
     digitalWrite(ledPin, HIGH);
     delay(dot);
     digitalWrite(ledPin, LOW);
     delay(betweenSymbols);
-  } else {
+  } 
+  //Dash
+  else {
     digitalWrite(ledPin, HIGH);
     delay(dash);
     digitalWrite(ledPin, LOW);
@@ -54,7 +61,7 @@ void blink(bool isShort) {
   }
 }
 
-// Letter to corresponding morse time
+// This function takes a character and outputs the morse code for that letter
 void morse(char c) {
   switch (c) {
     case 'A': case 'a': blink(true); blink(false); break;
@@ -93,10 +100,13 @@ void morse(char c) {
     case '8': blink(false); blink(false); blink(false); blink(true); blink(true); break;
     case '9': blink(false); blink(false); blink(false); blink(false); blink(true); break;
     case '0': blink(false); blink(false); blink(false); blink(false); blink(false); break;
-    case ' ': delay(betweenWords - betweenLetters - betweenSymbols); break; // Time between words is calculated like this because of the following calculation behind the switch case.
+    // The space means that a word is done. The time between words is calculated like this because a das/dot always has the delay "betweenSymbols" at the end.
+    // Additionally (you can see it after the switch case) a delay of "betweenLetters" is done after each letter. This is why the delay between words is calculated like this.
+    // It all adds up to the value of "betweenWords" 
+    case ' ': delay(betweenWords - betweenLetters - betweenSymbols); break; 
     default: Serial.println("Char not supported for LED output!"); break;
   }
 
-  //After that the end of a letter is reached. The remaining pause time is calculated like this:
+  //After that the end of a letter is reached. The remaining pause time is calculated like this, because a dash/dot always has the delay "betweenSymbols" at the end.
   delay(betweenLetters - betweenSymbols);
 }
