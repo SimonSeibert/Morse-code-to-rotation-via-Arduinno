@@ -8,6 +8,9 @@ using UnityEngine.Windows.Speech;
 
 public class VoiceButton : MonoBehaviour
 {
+    public bool movePlanchetteAfterTalking;
+    public MovePlanchette planchette;
+
     private Button b;
     private Text bText;
 
@@ -28,7 +31,7 @@ public class VoiceButton : MonoBehaviour
     private void click()
     {
         startDictator();
-        bText.text = "Waiting for your message...";
+        bText.text = "Waiting for your message . . .";
         b.interactable = false;
     }
 
@@ -71,6 +74,8 @@ public class VoiceButton : MonoBehaviour
         Debug.Log("HexString: " + hexMessage);
         //Send hexa string to Arduino
         //arduinoCommunicator.sendMessageToArdu(hexMessage);
+        //Move planchette if it is enabled
+        if(movePlanchetteAfterTalking) planchette.moveToMultiple(planchette.messageToPositions(hexMessage));
         //Enable the button again for a new voice message
         enableButton();
     }

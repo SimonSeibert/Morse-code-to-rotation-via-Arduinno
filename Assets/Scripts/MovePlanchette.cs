@@ -2,9 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 
 public class MovePlanchette : MonoBehaviour
 {
+    public Light light;
     [Tooltip("Time the planchette needs to move between hexa numbers")]
     public float moveTime = 1f;
     [Tooltip("Positions of all hexa numbers")]
@@ -12,16 +14,26 @@ public class MovePlanchette : MonoBehaviour
 
     private Transform targetTmp; // Current target of the planchette
 
+    private bool lightOn = false; //Keeps track if the light should turn on or of
+    private float lightStep = 10; //How fast should the light turn on/off
+
     void Start()
     {
         targetTmp = transform; //At the beginning the planchette targets itself -> it doesn't move 
-        moveToMultiple(messageToPositions("AF042B"));
     }
 
     void Update()
     {
         // Planchette always moves to it's target in a smooth way
         transform.position = Vector3.Lerp(transform.position, targetTmp.position, (moveTime + 2f) * Time.deltaTime);
+
+        // Change between on/off state of the light smoothly
+        if(lightOn)
+        {
+            light.intensity += lightStep * Time.deltaTime;
+        } else {
+            light.intensity -= lightStep * Time.deltaTime;
+        }
     }
 
     /// <summary>
@@ -30,7 +42,11 @@ public class MovePlanchette : MonoBehaviour
     /// <param name="positions"></param>
     public void moveToMultiple(Transform[] positions)
     {
-        for (int i = 0; i < positions.Length; i++)
+        //Get number of hexa letters that the planchette has to travel to
+        int length = positions.Length;
+        //Explanation in "blinkLight" function
+        StartCoroutine("blinkLight", ((float) 1, (float) length, (float) .5, (float) 1.5));
+        for (int i = 0; i < length; i++)
         {
             // The delay is calculated in a way so the planchette starts moving to the hexa numbers one after another
             StartCoroutine("moveTo", (positions[i], i * moveTime));
@@ -46,6 +62,30 @@ public class MovePlanchette : MonoBehaviour
     {
         yield return new WaitForSeconds(parameter.Item2); // Waits a specified amount of time before moving
         targetTmp = parameter.Item1;
+    }
+
+    /// <summary>
+    /// Flashes the light at specific timings with a specific delay and duration. Corutines can only recieve 1 parameter which is why everything is in a tupel
+    /// </summary>
+    /// <param name="parameter">
+    /// 1st float: startDelay
+    /// 2nd float: how many times it should blink
+    /// 3rd float: Time when light turns on
+    /// 4th float: Time when light turns off
+    /// </param>
+    /// <returns></returns>
+    IEnumerator blinkLight((float, float, float, float) parameter)
+    {
+        //Start delay
+        yield return new WaitForSeconds(parameter.Item1);   
+        //Iterations = Number of Hexa numbers
+        for (int i = 0; i < parameter.Item2; i++)
+        {
+            lightOn = true;
+            yield return new WaitForSeconds(parameter.Item3);
+            lightOn = false;
+            yield return new WaitForSeconds(parameter.Item4);
+        }
     }
 
     /// <summary>

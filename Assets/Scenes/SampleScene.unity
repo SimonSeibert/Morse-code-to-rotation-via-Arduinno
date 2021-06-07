@@ -882,7 +882,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 750, y: 200}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &767561335
 MonoBehaviour:
@@ -941,7 +941,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.990566, g: 0.85506403, b: 0.85506403, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -978,6 +978,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22f9b94c5b303cf478245441feb469cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movePlanchetteAfterTalking: 1
+  planchette: {fileID: 811539877}
 --- !u!114 &811539877
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -990,6 +992,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dd073777ff649340bebf466e16a6328, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  light: {fileID: 13945274}
   moveTime: 2
   pos_a: {fileID: 84654085}
   pos_b: {fileID: 812852405}
@@ -1193,21 +1196,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 1181094671}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 0
+    m_Top: 80
     m_Bottom: 0
-  m_ChildAlignment: 0
-  m_StartCorner: 0
-  m_StartAxis: 0
-  m_CellSize: {x: 300, y: 200}
-  m_Spacing: {x: 0, y: 0}
-  m_Constraint: 0
-  m_ConstraintCount: 2
+  m_ChildAlignment: 1
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!114 &1181094674
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1637,12 +1642,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 55
-    m_FontStyle: 0
+    m_Font: {fileID: 12800000, guid: 49287bb2e1cebf54fb34fc3611e897d2, type: 3}
+    m_FontSize: 78
+    m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 55
+    m_MaxSize: 95
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
