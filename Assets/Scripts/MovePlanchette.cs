@@ -6,9 +6,10 @@ using UnityEngine.Experimental.GlobalIllumination;
 
 public class MovePlanchette : MonoBehaviour
 {
-    public Light light;
-    [Tooltip("Time the planchette needs to move between hexa numbers")]
-    public float moveTime = 1f;
+    public new Light light;
+    [Tooltip("Speed at which planchette moves to hexa numbers")]
+    [Header("Don't change value, doesn't work dynamicly yet")]
+    public float moveTime = 2f;
     [Tooltip("Positions of all hexa numbers")]
     public Transform pos_a, pos_b, pos_c, pos_d, pos_e, pos_f, pos_0, pos_1, pos_2, pos_3, pos_4, pos_5, pos_6, pos_7, pos_8, pos_9;
 
@@ -20,6 +21,7 @@ public class MovePlanchette : MonoBehaviour
     void Start()
     {
         targetTmp = transform; //At the beginning the planchette targets itself -> it doesn't move 
+        //moveToMultiple(messageToPositions("A2F743"));
     }
 
     void Update()
@@ -44,8 +46,8 @@ public class MovePlanchette : MonoBehaviour
     {
         //Get number of hexa letters that the planchette has to travel to
         int length = positions.Length;
-        //Explanation in "blinkLight" function
-        StartCoroutine("blinkLight", ((float) 1, (float) length, (float) .5, (float) 1.5));
+        //Explanation in "blinkLight" function. Start a bit before first number is reached, blink length-times for 1 second
+        StartCoroutine("blinkLight", ((float) .75f, (float) length, (float) .5, (float) 1.5));
         for (int i = 0; i < length; i++)
         {
             // The delay is calculated in a way so the planchette starts moving to the hexa numbers one after another

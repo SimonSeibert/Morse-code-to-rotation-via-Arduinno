@@ -993,7 +993,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   light: {fileID: 13945274}
-  moveTime: 2
+  moveSpeed: 1
   pos_a: {fileID: 84654085}
   pos_b: {fileID: 812852405}
   pos_c: {fileID: 52995121}
