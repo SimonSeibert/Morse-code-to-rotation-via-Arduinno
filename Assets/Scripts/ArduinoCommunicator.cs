@@ -41,7 +41,7 @@ public class ArduinoCommunicator : MonoBehaviour
     /// <summary>
     /// Read from the serial port and log the message
     /// </summary>
-    void receiveMessageFromArdu()
+    public void receiveMessageFromArdu()
     {
         receivedString = serial.ReadLine();
         Debug.Log(receivedString);
@@ -50,10 +50,10 @@ public class ArduinoCommunicator : MonoBehaviour
     /// <summary>
     /// Write a message in the serial port which the Arduino can read
     /// </summary>
-    /// <param name="s">Message you want to send</param>
-    void sendMessageToArdu(string s)
+    /// <param name="message">Message you want to send</param>
+    public void sendMessageToArdu(string message)
     {
-        serial.Write(s);
+        serial.Write(message);
     }
 
     /// <summary>
