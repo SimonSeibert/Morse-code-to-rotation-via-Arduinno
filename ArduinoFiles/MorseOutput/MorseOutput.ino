@@ -61,45 +61,53 @@ void blink(bool isShort) {
   }
 }
 
+void doDot() {
+  blink(true);
+}
+
+void doDash() {
+  blink(false);
+}
+
 // This function takes a character and outputs the morse code for that letter
 void morse(char c) {
   switch (c) {
-    case 'A': case 'a': blink(true); blink(false); break;
-    case 'B': case 'b': blink(false); blink(true); blink(true); blink(true); break;
-    case 'C': case 'c': blink(false); blink(true); blink(false); blink(true); break;
-    case 'D': case 'd': blink(false); blink(true); blink(true); break;
-    case 'E': case 'e': blink(true); break;
-    case 'F': case 'f': blink(true); blink(true); blink(false); blink(true); break;
-    case 'G': case 'g': blink(false); blink(false); blink(true); break;
-    case 'H': case 'h': blink(true); blink(true); blink(true); blink(true); break;
-    case 'I': case 'i': blink(true); blink(true); break;
-    case 'J': case 'j': blink(true); blink(false); blink(false); blink(false); break;
-    case 'K': case 'k': blink(false); blink(true); blink(false); break;
-    case 'L': case 'l': blink(true); blink(false); blink(true); blink(true); break;
-    case 'M': case 'm': blink(false); blink(false); break;
-    case 'N': case 'n': blink(false); blink(true); break;
-    case 'O': case 'o': blink(false); blink(false); blink(false); break;
-    case 'P': case 'p': blink(true); blink(false); blink(false); blink(true); break;
-    case 'Q': case 'q': blink(false); blink(false); blink(true); blink(false); break;
-    case 'R': case 'r': blink(true); blink(false); blink(true); break;
-    case 'S': case 's': blink(true); blink(true); blink(true); break;
-    case 'T': case 't': blink(false); break;
-    case 'U': case 'u': blink(true); blink(true); blink(false); break;
-    case 'V': case 'v': blink(true); blink(true); blink(true); blink(false); break;
-    case 'W': case 'w': blink(true); blink(false); blink(false); break;
-    case 'X': case 'x': blink(false); blink(true); blink(true); blink(false); break;
-    case 'Y': case 'y': blink(false); blink(true); blink(false); blink(false); break;
-    case 'Z': case 'z': blink(false); blink(false); blink(true); blink(true); break;
-    case '1': blink(true); blink(false); blink(false); blink(false); blink(false); break;
-    case '2': blink(true); blink(true); blink(false); blink(false); blink(false); break;
-    case '3': blink(true); blink(true); blink(true); blink(false); blink(false); break;
-    case '4': blink(true); blink(true); blink(true); blink(true); blink(false); break;
-    case '5': blink(true); blink(true); blink(true); blink(true); blink(true); break;
-    case '6': blink(false); blink(true); blink(true); blink(true); blink(true); break;
-    case '7': blink(false); blink(false); blink(true); blink(true); blink(true); break;
-    case '8': blink(false); blink(false); blink(false); blink(true); blink(true); break;
-    case '9': blink(false); blink(false); blink(false); blink(false); blink(true); break;
-    case '0': blink(false); blink(false); blink(false); blink(false); blink(false); break;
+    case 'A': case 'a': doDot(); doDash(); break;
+    case 'B': case 'b': doDash(); doDot(); doDot(); doDot(); break;
+    case 'C': case 'c': doDash(); doDot(); doDash(); doDot(); break;
+    case 'D': case 'd': doDash(); doDot(); doDot(); break;
+    case 'E': case 'e': doDot(); break;
+    case 'F': case 'f': doDot(); doDot(); doDash(); doDot(); break;
+    case 'G': case 'g': doDash(); doDash(); doDot(); break;
+    case 'H': case 'h': doDot(); doDot(); doDot(); doDot(); break;
+    case 'I': case 'i': doDot(); doDot(); break;
+    case 'J': case 'j': doDot(); doDash(); doDash(); doDash(); break;
+    case 'K': case 'k': doDash(); doDot(); doDash(); break;
+    case 'L': case 'l': doDot(); doDash(); doDot(); doDot(); break;
+    case 'M': case 'm': doDash(); doDash(); break;
+    case 'N': case 'n': doDash(); doDot(); break;
+    case 'O': case 'o': doDash(); doDash(); doDash(); break;
+    case 'P': case 'p': doDot(); doDash(); doDash(); doDot(); break;
+    case 'Q': case 'q': doDash(); doDash(); doDot(); doDash(); break;
+    case 'R': case 'r': doDot(); doDash(); doDot(); break;
+    case 'S': case 's': doDot(); doDot(); doDot(); break;
+    case 'T': case 't': doDash(); break;
+    case 'U': case 'u': doDot(); doDot(); doDash(); break;
+    case 'V': case 'v': doDot(); doDot(); doDot(); doDash(); break;
+    case 'W': case 'w': doDot(); doDash(); doDash(); break;
+    case 'X': case 'x': doDash(); doDot(); doDot(); doDash(); break;
+    case 'Y': case 'y': doDash(); doDot(); doDash(); doDash(); break;
+    case 'Z': case 'z': doDash(); doDash(); doDot(); doDot(); break;
+    case '1': doDot(); doDash(); doDash(); doDash(); doDash(); break;
+    case '2': doDot(); doDot(); doDash(); doDash(); doDash(); break;
+    case '3': doDot(); doDot(); doDot(); doDash(); doDash(); break;
+    case '4': doDot(); doDot(); doDot(); doDot(); doDash(); break;
+    case '5': doDot(); doDot(); doDot(); doDot(); doDot(); break;
+    case '6': doDash(); doDot(); doDot(); doDot(); doDot(); break;
+    case '7': doDash(); doDash(); doDot(); doDot(); doDot(); break;
+    case '8': doDash(); doDash(); doDash(); doDot(); doDot(); break;
+    case '9': doDash(); doDash(); doDash(); doDash(); doDot(); break;
+    case '0': doDash(); doDash(); doDash(); doDash(); doDash(); break;
     // The space means that a word is done. The time between words is calculated like this because a das/dot always has the delay "betweenSymbols" at the end.
     // Additionally (you can see it after the switch case) a delay of "betweenLetters" is done after each letter. This is why the delay between words is calculated like this.
     // It all adds up to the value of "betweenWords" 
