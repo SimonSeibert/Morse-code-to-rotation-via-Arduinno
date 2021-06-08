@@ -6,6 +6,7 @@ using UnityEngine.Experimental.GlobalIllumination;
 
 public class MovePlanchette : MonoBehaviour
 {
+    [Tooltip("The light which lights up the hexa numbers")]
     public new Light light;
     [Tooltip("Speed at which planchette moves to hexa numbers")]
     [Header("Don't change value, doesn't work dynamicly yet")]
@@ -14,12 +15,14 @@ public class MovePlanchette : MonoBehaviour
     public Transform pos_a, pos_b, pos_c, pos_d, pos_e, pos_f, pos_0, pos_1, pos_2, pos_3, pos_4, pos_5, pos_6, pos_7, pos_8, pos_9;
 
     private Transform targetTmp; // Current target of the planchette
+    private AudioSource scratch; //Scratch sound that plays when planchette moves
 
     private bool lightOn = false; //Keeps track if the light should turn on or of
     private float lightStep = 10; //How fast should the light turn on/off
 
     void Start()
     {
+        scratch = GetComponent<AudioSource>(); //Get the instance of the audio source 
         targetTmp = transform; //At the beginning the planchette targets itself -> it doesn't move 
         //moveToMultiple(messageToPositions("A2F743"));
     }
@@ -64,6 +67,7 @@ public class MovePlanchette : MonoBehaviour
     {
         yield return new WaitForSeconds(parameter.Item2); // Waits a specified amount of time before moving
         targetTmp = parameter.Item1;
+        scratch.Play();
     }
 
     /// <summary>
