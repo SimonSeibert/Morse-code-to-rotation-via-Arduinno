@@ -44,7 +44,8 @@ public class ArduinoCommunicator : MonoBehaviour
     public void receiveMessageFromArdu()
     {
         receivedString = serial.ReadLine();
-        Debug.Log(receivedString);
+        Debug.Log("Message from Ardu: '" + receivedString + "', trying to move planchette...");
+        move.moveToMultiple(move.messageToPositions(receivedString));
     }
 
     /// <summary>
@@ -78,8 +79,9 @@ public class ArduinoCommunicator : MonoBehaviour
             Debug.Log("COM" + comPort + " is already open...");
         }
 
-        //I somehow have to write something in the serial port so that the application doesn't crash...
+        //Defines what this program sees as a new line
         serial.NewLine = "\n";
+        //I somehow have to write something in the serial port so that the application doesn't crash...
         serial.Write("something" + "\n");
     }
 }

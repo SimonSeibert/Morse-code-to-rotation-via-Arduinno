@@ -25,11 +25,14 @@ char wordHolder[wordSize];        // Holds letters for words
 char sentenceHolder[sentenceSize];// Holds words for sentences
 char sentenceAsHex[1000];         // Holds hexa representation of the sentence
 
+bool debugging = false;           //Enables/Disables print statement in the monitor
+
 void setup() {
   // initialize the pushbutton pin as an input:
   pinMode(buttonPin, INPUT);
   // initialize serial communication for Debugging:
   Serial.begin(19200);
+  Serial.println("");
 }
 
 void loop() {
@@ -40,14 +43,15 @@ void loop() {
 
   ///////////////////////////////////// PRESS ///////////////////////////////////////
   if (!wasPressed && buttonState == HIGH) {
-
     timestampOnPress = millis(); //Gets time since execution start and current time in ms
 
     if (firstPress) { //Ignore the release time between program start and the first press. Only start after the first press was done
       float releaseTime = millis() - timestampOnRelease; //get release time in ms by subtracting the timestamp from the current time
-      Serial.print("Release Time: ");
-      Serial.print(releaseTime);
-      Serial.print("\n");
+      if (debugging) {
+        Serial.print("Release Time: ");
+        Serial.print(releaseTime);
+        Serial.print("\n");
+      }
 
       //Sometimes unwanted releases with the time of 0 seconds register. We filter them out here
       if (releaseTime > 0.01f) {
@@ -77,50 +81,72 @@ void loop() {
       //TODO How shall we handle the times between dash and dot? Right now everything after dot time is registered as dash
       if (pressTime <= dot) {
         strcat(letterHolder, "0"); //0 means dot
-        Serial.print("Symbol: ");
-        Serial.print(letterHolder);
-        Serial.print("\n");
+        if (debugging) {
+
+          Serial.print("Symbol: ");
+          Serial.print(letterHolder);
+          Serial.print("\n");
+        }
       } else if (pressTime > dot && pressTime < doneTime) {
         strcat(letterHolder, "1"); //1 means dash  --> Example: "01001" means dot-dash-dot-dot-dash. This will be used in the 'evalLetter()' function
-        Serial.print("Symbol: ");
-        Serial.print(letterHolder);
-        Serial.print("\n");
+        if (debugging) {
+          Serial.print("Symbol: ");
+          Serial.print(letterHolder);
+          Serial.print("\n");
+        }
       } else { //Done
-        Serial.println("Done, Sentence is:");
-        convertToHexaString(sentenceHolder);
-        //Print sentence
-        int c = 0;
-        while (sentenceHolder[c] != '\0')  {
-          Serial.print(sentenceHolder[c]);
-          c++;
-        }
-        Serial.println("---");
-        //Print hex sentence
-        Serial.println("Hex Sentence is:");
-        c = 0;
-        while (sentenceAsHex[c] != '\0')  {
-          Serial.print(sentenceAsHex[c]);
-          c++;
-        }
-
-        //Clear Sentence and Hexa string
-        for (int i = 1; i < sentenceSize; i++)
-        {
-          sentenceHolder[i] = ' ';
-        }
-        sentenceHolder[0] = '\0';
-        
-        for (int i = 1; i < hexaSize; i++)
-        {
-          sentenceAsHex[i] = ' ';
-        }
-        sentenceAsHex[0] = '\0';
-        //Set first press to true so the waiting time between morse codes doesnt get registred as waiting time
-        firstPress = true;
+        messageDone();
       }
     }
     wasPressed = false;
   }
+}
+
+void messageDone() {
+  convertToHexaString(sentenceHolder);
+
+  if (debugging) {
+    Serial.println("Done, Sentence is:");
+    Serial.print(sentenceHolder);
+    Serial.println("");
+    //Print hex sentence
+    Serial.print("Hex Sentence is: '");
+    Serial.print(sentenceAsHex);
+    Serial.print("'");
+    Serial.println("");
+  } else {
+    Serial.println(sentenceAsHex);
+  }
+
+  clearAllHolders();
+  //Set first press to true so the waiting time between morse codes doesnt get registred as waiting time
+  firstPress = true;
+}
+
+void clearAllHolders() {
+  for (int i = 1; i < letterSize; i++)
+  {
+    letterHolder[i] = ' ';
+  }
+  letterHolder[0] = '\0';
+
+  for (int i = 1; i < wordSize; i++)
+  {
+    wordHolder[i] = ' ';
+  }
+  wordHolder[0] = '\0';
+
+  for (int i = 1; i < sentenceSize; i++)
+  {
+    sentenceHolder[i] = ' ';
+  }
+  sentenceHolder[0] = '\0';
+
+  for (int i = 1; i < hexaSize; i++)
+  {
+    sentenceAsHex[i] = ' ';
+  }
+  sentenceAsHex[0] = '\0';
 }
 
 void evalWord() {
@@ -139,9 +165,11 @@ void evalWord() {
   //Set the first char in wordHolder to '\0'. That way it's enterpreted as an empty string.
   wordHolder[0] = '\0';
 
-  Serial.print("Sentence: ");
-  Serial.print(sentenceHolder);
-  Serial.print("\n");
+  if (debugging) {
+    Serial.print("Sentence: ");
+    Serial.print(sentenceHolder);
+    Serial.print("\n");
+  }
 }
 
 void evalLetter() {
@@ -222,13 +250,15 @@ void evalLetter() {
     letter = '0';
   } else {
     //ERROR
-    Serial.print("Fehler!! >:( \n");      //A combination that isn't a word. How shall we handle this? Stop the program? Use "?" as a placeholder for "This letter doesn't exist"?
+    if (debugging) Serial.print("Fehler!! >:( \n"); //A combination that isn't a word. How shall we handle this? Stop the program? Use "?" as a placeholder for "This letter doesn't exist"?
     letter = '?';
   }
 
-  Serial.print("Letter: ");
-  Serial.print(letter);
-  Serial.print("\n");
+  if (debugging) {
+    Serial.print("Letter: ");
+    Serial.print(letter);
+    Serial.print("\n");
+  }
 
   //Clear the letterHolder. (Maybe you can remove the for loop as "letterHolder[0] = '\0';" does the same job later.
   for (int i = 1; i < letterSize; i++)

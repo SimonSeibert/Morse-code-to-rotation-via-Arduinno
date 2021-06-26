@@ -1194,8 +1194,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d20729d1716a4849a4fd7b0e78f4aea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  comPort: 13
-  baudRate: 19200
+  comPort: 12
+  baudRate: 57600
   move: {fileID: 811539877}
 --- !u!4 &843658282
 Transform:
