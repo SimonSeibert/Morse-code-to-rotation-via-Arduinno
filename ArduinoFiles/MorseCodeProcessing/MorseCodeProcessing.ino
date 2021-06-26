@@ -1,12 +1,19 @@
+#include <stdio.h>
+#include <string.h>
+
 const int buttonPin = 16;           // the number of the pushbutton pin
+
 const float dot = 300;              // Time in ms
 const float dash = 900;             // 3*dot
 const float betweenSymbols = 300;   // 1*dot
 const float betweenLetters = 900;   // 3*dot
 const float betweenWords = 2100;    // 7*dot
+const float doneTime = 5000;        // Hold until this threshold and the morse code will be processed
+
 const int letterSize = 100;
 const int wordSize = 100;
 const int sentenceSize = 100;
+const int hexaSize = 1000;
 
 int buttonState = 0;              // variable for reading the pushbutton status
 bool wasPressed = false;          // Use this bool to see if the button was pressed. After it was pressed it will be put on false. That way the if else part in void loop() will only be executed one time.
@@ -16,6 +23,7 @@ float timestampOnRelease = 0;     // timestampOnRelease is used to get releaseti
 char letterHolder[letterSize];    // Holds current morse code word (e.g. Dash-Dot-Dot). 0 = Dot, 1 = Dash for letters
 char wordHolder[wordSize];        // Holds letters for words
 char sentenceHolder[sentenceSize];// Holds words for sentences
+char sentenceAsHex[1000];         // Holds hexa representation of the sentence
 
 void setup() {
   // initialize the pushbutton pin as an input:
@@ -66,17 +74,48 @@ void loop() {
 
     //Sometimes unwanted presses with the time of 0 seconds register. We filter them out here
     if (pressTime > 0.01f) {
-
       //TODO How shall we handle the times between dash and dot? Right now everything after dot time is registered as dash
       if (pressTime <= dot) {
         strcat(letterHolder, "0"); //0 means dot
-      } else {
+        Serial.print("Symbol: ");
+        Serial.print(letterHolder);
+        Serial.print("\n");
+      } else if (pressTime > dot && pressTime < doneTime) {
         strcat(letterHolder, "1"); //1 means dash  --> Example: "01001" means dot-dash-dot-dot-dash. This will be used in the 'evalLetter()' function
-      }
+        Serial.print("Symbol: ");
+        Serial.print(letterHolder);
+        Serial.print("\n");
+      } else { //Done
+        Serial.println("Done, Sentence is:");
+        convertToHexaString(sentenceHolder);
+        //Print sentence
+        int c = 0;
+        while (sentenceHolder[c] != '\0')  {
+          Serial.print(sentenceHolder[c]);
+          c++;
+        }
+        Serial.println("---");
+        //Print hex sentence
+        Serial.println("Hex Sentence is:");
+        c = 0;
+        while (sentenceAsHex[c] != '\0')  {
+          Serial.print(sentenceAsHex[c]);
+          c++;
+        }
 
-      Serial.print("Symbol: ");
-      Serial.print(letterHolder);
-      Serial.print("\n");
+        //Clear Sentence and Hexa string
+        for (int i = 1; i < sentenceSize; i++)
+        {
+          sentenceHolder[i] = ' ';
+        }
+        sentenceHolder[0] = '\0';
+        
+        for (int i = 1; i < hexaSize; i++)
+        {
+          sentenceAsHex[i] = ' ';
+        }
+        sentenceAsHex[0] = '\0';
+      }
     }
     wasPressed = false;
   }
@@ -85,10 +124,10 @@ void loop() {
 void evalWord() {
   //Eval the last input as a letter
   evalLetter();
-  //Add a space between words
-  strcat(sentenceHolder, " ");
   //Add word to sentence
   strcat(sentenceHolder, wordHolder);
+  //Add a space between words
+  strcat(sentenceHolder, " ");
 
   //Clear the wordHolder. (Maybe you can remove the for loop as "wordHolder[0] = '\0';" does the same job later.
   for (int i = 1; i < wordSize; i++)
@@ -199,4 +238,23 @@ void evalLetter() {
 
   //Append char to wordHolder String
   strncat(wordHolder, &letter, 1);
+}
+
+// This Method receives an "Ascii" String and turns it into a String with the hexadecimal representation
+void convertToHexaString(char* str) {
+  int i, j;         //Two counter vars we need later
+
+  //converting str into Hex and add it into sentenceAsHex
+  //In Ascii, every letter corresponds to 2 Hexadecimal numbers.
+  //Thats why we count j+=2 but we need also a counter that increments by 1 which is i
+  //We go through each charactor in our stirng
+  for (i = 0, j = 0; i < strlen(str); i++, j += 2)
+  {
+    //Method declaration of sprintf: int sprintf(char *str, const char *format, ...)
+    //E.g. "sprintf(str, "Value of Pi = %f", M_PI);" outputs "Value of Pi = 3.141593" and saves it in str -> That's exactly what we need
+    //We go through each character in our string and convert it with the following format: (%02X) -> This turns a Ascii char into hex
+    //Every converted char gets then added to sentenceAsHex.
+    sprintf((char*) sentenceAsHex + j, "%02X", str[i]);
+  }
+  sentenceAsHex[j] = '\0'; //Add Null at the end so we know when the string is completed
 }
