@@ -115,6 +115,8 @@ void loop() {
           sentenceAsHex[i] = ' ';
         }
         sentenceAsHex[0] = '\0';
+        //Set first press to true so the waiting time between morse codes doesnt get registred as waiting time
+        firstPress = true;
       }
     }
     wasPressed = false;
