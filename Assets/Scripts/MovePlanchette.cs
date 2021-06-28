@@ -144,27 +144,30 @@ public class MovePlanchette : MonoBehaviour
                     positions.Add(pos_a);
                     break;
                 case 'B':
-                case ('b'):
+                case 'b':
                     positions.Add(pos_b);
                     break;
                 case 'C':
-                case ('c'):
+                case 'c':
                     positions.Add(pos_c);
                     break;
                 case 'D':
-                case ('d'):
+                case 'd':
                     positions.Add(pos_d);
                     break;
                 case 'E':
-                case ('e'):
+                case 'e':
                     positions.Add(pos_e);
                     break;
                 case 'F':
-                case ('f'):
+                case 'f':
                     positions.Add(pos_f);
                     break;
+				case '?':
+				case '.':
+					break;
                 default:
-                    Debug.LogWarning("WARNING: Received a hexa numver which isn't covered in switch case");
+                    Debug.LogWarning("WARNING: Received a hexa number which isn't covered in switch case");
                     break;
             }
         }
