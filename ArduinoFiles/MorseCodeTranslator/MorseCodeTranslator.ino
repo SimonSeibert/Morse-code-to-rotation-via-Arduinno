@@ -1,4 +1,5 @@
 #include <Servo.h>
+#include <CapacitiveSensor.h>
 
 const int buttonPin = 16;           // the number of the pushbutton pin
 const int servoPin = 2;             // the number of the Servo pin
@@ -27,6 +28,11 @@ char hexHolder[hexSize];
 
 Servo myservo;
 
+CapacitiveSensor Sensor = CapacitiveSensor(2, 4);
+const int capThreshhold = 400;        // Threshold for when capacitive reading reading counts as a press or a release
+long capValue;                        // Value from capacitive reading
+
+bool enableDIYsensor = false;
 bool debugging = true;
 
 void setup() {
@@ -39,67 +45,88 @@ void setup() {
 }
 
 void loop() {
+  // Small delay to keep processing effort lower
+  delay(20);
+  // read value of capacitive foil
+  if (enableDIYsensor) capValue = Sensor.capacitiveSensor(30);
   // read the state of the pushbutton value:
-  buttonState = digitalRead(buttonPin);
+  if (!enableDIYsensor) buttonState = digitalRead(buttonPin);
 
   //Code in the if and else-if part will only be executed once after the button was pressed/released
-
-  ///////////////////////////////////// PRESS ///////////////////////////////////////
-  if (!wasPressed && buttonState == HIGH) {
-
-    timestampOnPress = millis(); //Gets time since execution start and current time in ms
-
-    if (firstPress) { //Ignore the release time between program start and the first press. Only start after the first press was done
-      float releaseTime = millis() - timestampOnRelease; //get release time in ms by subtracting the timestamp from the current time
-      if (debugging) {
-        Serial.print("Release Time: ");
-        Serial.print(releaseTime);
-        Serial.print("\n");
-      }
-
-      //Sometimes unwanted releases with the time of 0 seconds register. We filter them out here
-      if (releaseTime > 0.01f) {
-
-        //TODO How shall we handle the times between "betweenSymbols"/"betweenLetters" and "betweenLetters"/"betweenWords"?
-        if (releaseTime <= betweenSymbols) {
-          //Nothing needs to happen
-        } else if ((releaseTime > betweenSymbols) && (releaseTime <= betweenLetters)) {
-          evalLetter();
-        } else if ((releaseTime > betweenLetters) && (releaseTime <= betweenHex)) {
-          evalWord();
-        }
-        else if (releaseTime > betweenLetters) {
-          TranslateToHex();
-        }
-      }
+  if (!enableDIYsensor) {
+    if (!wasPressed && buttonState == HIGH) {
+      onPress();
+      wasPressed = true;
     }
-
-    firstPress = true;
-    wasPressed = true;
+    else if (wasPressed && buttonState == LOW) {
+      onRelease();
+      wasPressed = false;
+    }
+  } else {
+    if (!wasPressed && capValue >= capThreshhold) {
+      Serial.println("press");
+      onPress();
+      wasPressed = true;
+    }
+    else if (wasPressed && capValue < capThreshhold) {
+      Serial.println("release");
+      onRelease();
+      wasPressed = false;
+    }
   }
-  ///////////////////////////////////// RELEASE ///////////////////////////////////////
-  else if (wasPressed && buttonState == LOW) {
-    timestampOnRelease = millis();
+}
 
-    float pressTime = millis() - timestampOnPress;
+void onPress() {
+  timestampOnPress = millis(); //Gets time since execution start and current time in ms
 
-    //Sometimes unwanted presses with the time of 0 seconds register. We filter them out here
-    if (pressTime > 0.01f) {
-
-      //TODO How shall we handle the times between dash and dot? Right now everything after dot time is registered as dash
-      if (pressTime <= dot) {
-        strcat(letterHolder, "0"); //0 means dot
-      } else {
-        strcat(letterHolder, "1"); //1 means dash  --> Example: "01001" means dot-dash-dot-dot-dash. This will be used in the 'evalLetter()' function
-      }
-      if (debugging) {
-        Serial.print("Symbol: ");
-        Serial.print(letterHolder);
-        Serial.print("\n");
-      }
-
+  if (firstPress) { //Ignore the release time between program start and the first press. Only start after the first press was done
+    float releaseTime = millis() - timestampOnRelease; //get release time in ms by subtracting the timestamp from the current time
+    if (debugging) {
+      Serial.print("Release Time: ");
+      Serial.print(releaseTime);
+      Serial.print("\n");
     }
-    wasPressed = false;
+    //Sometimes unwanted releases with the time of 0 seconds register. We filter them out here
+    if (releaseTime > 0.01f) {
+
+      //TODO How shall we handle the times between "betweenSymbols"/"betweenLetters" and "betweenLetters"/"betweenWords"?
+      if (releaseTime <= betweenSymbols) {
+        //Nothing needs to happen
+      } else if ((releaseTime > betweenSymbols) && (releaseTime <= betweenLetters)) {
+        evalLetter();
+      } else if ((releaseTime > betweenLetters) && (releaseTime <= betweenHex)) {
+        evalWord();
+      }
+      else if (releaseTime > betweenLetters) {
+        firstPress = true;
+        TranslateToHex();
+      }
+    }
+  }
+
+  firstPress = true;
+}
+
+void onRelease() {
+  timestampOnRelease = millis();
+
+  float pressTime = millis() - timestampOnPress;
+
+  //Sometimes unwanted presses with the time of 0 seconds register. We filter them out here
+  if (pressTime > 0.01f) {
+
+    //TODO How shall we handle the times between dash and dot? Right now everything after dot time is registered as dash
+    if (pressTime <= dot) {
+      strcat(letterHolder, "0"); //0 means dot
+    } else {
+      strcat(letterHolder, "1"); //1 means dash  --> Example: "01001" means dot-dash-dot-dot-dash. This will be used in the 'evalLetter()' function
+    }
+    if (debugging) {
+      Serial.print("Symbol: ");
+      Serial.print(letterHolder);
+      Serial.print("\n");
+    }
+
   }
 }
 
@@ -231,111 +258,25 @@ void evalLetter() {
 
 void TranslateToHex() { //Translate the morse code word into hex.
   evalWord();
-  char senletter;
-  char senholder[4];
-  for (int i = 0; i < sentenceSize; i++) {
-    senletter = sentenceHolder[i];
 
-    if (senletter == 'A') {
-      strcat(senholder, "41_");
-    } else if (senletter == 'B') {
-      strcat(senholder, "42_");
-    } else if (senletter == 'C') {
-      strcat(senholder, "43_");
-    } else if (senletter == 'D') {
-      strcat(senholder, "44_");
-    } else if (senletter == 'E') {
-      strcat(senholder, "45_");
-    } else if (senletter == 'F') {
-      strcat(senholder, "46_");
-    } else if (senletter == 'G') {
-      strcat(senholder, "47_");
-    } else if (senletter == 'H') {
-      strcat(senholder, "48_");
-    } else if (senletter == 'I') {
-      strcat(senholder, "49_");
-    } else if (senletter == 'J') {
-      strcat(senholder, "4A_");
-    } else if (senletter == 'K') {
-      strcat(senholder, "4B_");
-    } else if (senletter == 'L') {
-      strcat(senholder, "4C_");
-    } else if (senletter == 'M') {
-      strcat(senholder, "4D_");
-    } else if (senletter == 'N') {
-      strcat(senholder, "4E_");
-    } else if (senletter == 'O') {
-      strcat(senholder, "4F_");
-    } else if (senletter == 'P') {
-      strcat(senholder, "50_");
-    } else if (senletter == 'Q') {
-      strcat(senholder, "51_");
-    } else if (senletter == 'R') {
-      strcat(senholder, "52_");
-    } else if (senletter == 'S') {
-      strcat(senholder, "53_");
-    } else if (senletter == 'T') {
-      strcat(senholder, "54_");
-    } else if (senletter == 'U') {
-      strcat(senholder, "55_");
-    } else if (senletter == 'V') {
-      strcat(senholder, "56_");
-    } else if (senletter == 'W') {
-      strcat(senholder, "57_");
-    } else if (senletter == 'X') {
-      strcat(senholder, "58_");
-    } else if (senletter == 'Y') {
-      strcat(senholder, "59_");
-    } else if (senletter == 'Z') {
-      strcat(senholder, "5A_");
-    } else if (senletter == '1') {
-      strcat(senholder, "31_");
-    } else if (senletter == '2') {
-      strcat(senholder, "32_");
-    } else if (senletter == '3') {
-      strcat(senholder, "33_");
-    } else if (senletter == '4') {
-      strcat(senholder, "34_");
-    } else if (senletter == '5') {
-      strcat(senholder, "35_");
-    } else if (senletter == '6') {
-      strcat(senholder, "36_");
-    } else if (senletter == '7') {
-      strcat(senholder, "37_");
-    } else if (senletter == '8') {
-      strcat(senholder, "38_");
-    } else if (senletter == '9') {
-      strcat(senholder, "39_");
-    } else if (senletter == '0') {
-      strcat(senholder, "30_");
-    } else if (senletter == '?') {
-      strcat(senholder, "3f_");
-    } else if (senletter == ' ') {
-      //When the word ends (which is space in that case),the hexholder get an '.' to mark the end.
-      strcat(senholder, ".");
-      strcat(hexHolder, senholder);
-      break;
-    }
-    else {
-      if (debugging) {
-        //ERROR
-        Serial.print("Fehler2!! >:( \n");      //A combination that isn't a word. How shall we handle this? Stop the program? Use "?" as a placeholder for "This letter doesn't exist"?
-      }
-    }
-    strcat(hexHolder, senholder);
-  }
-  for (int i = 1; i < letterSize; i++)
+  int i, j;         //Two counter vars we need later
+
+  //converting str into Hex and add it into strH
+  //In Ascii, every letter corresponds to 2 Hexadecimal numbers.
+  //Thats why we count j+=2 but we need also a counter that increments by 1 which is i
+  //We go through each charactor in our stirng
+  for (i = 0, j = 0; i < strlen(sentenceHolder); i++, j += 3)
   {
-    sentenceHolder[i] = ' ';
+    //Method declaration of sprintf: int sprintf(char *str, const char *format, ...)
+    //E.g. "sprintf(str, "Value of Pi = %f", M_PI);" outputs "Value of Pi = 3.141593" and saves it in str -> That's exactly what we need
+    //We go through each character in our string and convert it with the following format: (%02X) -> This turns a Ascii char into hex
+    //Every converted char gets then added to strH.
+    sprintf((char*) hexHolder + j, "%02X", sentenceHolder[i]);
+    strcat(hexHolder, "_");
   }
-  //Set the first char in sentenceHolder to '\0'. That way it's enterpreted as an empty string.
-  sentenceHolder[0] = '\0';
-  for (int i = 1; i < letterSize; i++)
-  {
-    senholder[i] = ' ';
-  }
-  //Set the first char in senHolder to '\0'. That way it's enterpreted as an empty string.
-  senholder[0] = '\0';
+  strcat(hexHolder, ".");   //Point at end of sentence
+  hexHolder[j + 1] = '\0'; //Add Null at the end so we know when the string is completed
+
   Serial.println(hexHolder);
   HexTurn();
 }
