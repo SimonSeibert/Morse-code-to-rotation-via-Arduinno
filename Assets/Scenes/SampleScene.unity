@@ -1195,7 +1195,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   comPort: 12
-  baudRate: 57600
+  baudRate: 9600
   move: {fileID: 811539877}
 --- !u!4 &843658282
 Transform:

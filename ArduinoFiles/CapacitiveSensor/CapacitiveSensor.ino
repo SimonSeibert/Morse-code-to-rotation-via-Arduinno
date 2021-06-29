@@ -15,7 +15,7 @@ void setup() {
 
 void loop() {
   val = Sensor.capacitiveSensor(30);
-  //Serial.println(val);
+  Serial.println(val);
 
   //PRESS
   if (val >= threshhold && state == 0) {   

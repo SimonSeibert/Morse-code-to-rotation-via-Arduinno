@@ -1,10 +1,15 @@
-const int buttonPin = D1;           // the number of the pushbutton pin
-const float dot = 500;              // Time in ms
-const float dash = 1500;             // 3*dot
-const float betweenSymbols = 1000;   // 2*dot
-const float betweenLetters = 2000;   // 4*dot
-const float betweenWords = 3000;    // 6*dot
-const float betweenHex = 5000;      //10*dot
+#include <Servo.h>
+
+const int buttonPin = 16;           // the number of the pushbutton pin
+const int servoPin = 2;             // the number of the Servo pin
+
+const float dot = 300;              // Time in ms
+const float dash = 900;             // 3*dot
+const float betweenSymbols = 300;   // 2*dot
+const float betweenLetters = 900;   // 4*dot
+const float betweenWords = 2100;    // 6*dot
+const float betweenHex = 3000;      //10*dot
+
 const int letterSize = 100;
 const int wordSize = 100;
 const int sentenceSize = 100;
@@ -19,21 +24,18 @@ char letterHolder[letterSize];    // Holds current morse code word (e.g. Dash-Do
 char wordHolder[wordSize];        // Holds letters for words
 char sentenceHolder[sentenceSize];// Holds words for sentences
 char hexHolder[hexSize];
-bool debugging;
-
-#include <Servo.h>
 
 Servo myservo;
 
+bool debugging = true;
+
 void setup() {
   myservo.attach(D3);
-  // initialize the pushbutton pin as an input:
+  // initialize the pushbutton pin as an input and servo as output:
   pinMode(buttonPin, INPUT);
-  if (debugging) {
-    // initialize serial communication for Debugging:
-    Serial.begin(9600);
-  }
-
+  pinMode(servoPin, OUTPUT);
+  // initialize serial communication for Debugging:
+  Serial.begin(9600);
 }
 
 void loop() {
@@ -54,7 +56,6 @@ void loop() {
         Serial.print(releaseTime);
         Serial.print("\n");
       }
-
 
       //Sometimes unwanted releases with the time of 0 seconds register. We filter them out here
       if (releaseTime > 0.01f) {
@@ -433,5 +434,4 @@ void HexTurn() {
     }
 
   }
-
 }

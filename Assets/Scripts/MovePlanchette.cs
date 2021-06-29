@@ -165,7 +165,8 @@ public class MovePlanchette : MonoBehaviour
                     break;
 				case '?':
 				case '.':
-					break;
+                case '_':
+                    break;
                 default:
                     Debug.LogWarning("WARNING: Received a hexa number which isn't covered in switch case");
                     break;
