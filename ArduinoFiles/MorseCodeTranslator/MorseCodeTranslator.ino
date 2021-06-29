@@ -28,11 +28,13 @@ char hexHolder[hexSize];
 
 Servo myservo;
 
-CapacitiveSensor Sensor = CapacitiveSensor(2, 4);
+const int capOutPin = 4;
+const int capInPin = 2;
+CapacitiveSensor Sensor = CapacitiveSensor(capInPin, capOutPin);
 const int capThreshhold = 400;        // Threshold for when capacitive reading reading counts as a press or a release
 long capValue;                        // Value from capacitive reading
 
-bool enableDIYsensor = false;
+bool enableDIYsensor = true;
 bool debugging = true;
 
 void setup() {
