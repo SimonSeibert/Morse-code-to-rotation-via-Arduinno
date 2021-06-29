@@ -18,7 +18,7 @@ const int hexSize = 1000;
 
 int buttonState = 0;              // variable for reading the pushbutton status
 bool wasPressed = false;          // Use this bool to see if the button was pressed. After it was pressed it will be put on false. That way the if else part in void loop() will only be executed one time.
-bool firstPress = false;          // See explenation when it is used
+bool firstPress = true;          // See explenation when it is used
 float timestampOnPress = 0;       // timestampOnPress is used to get presstime
 float timestampOnRelease = 0;     // timestampOnRelease is used to get releasetime
 char letterHolder[letterSize];    // Holds current morse code word (e.g. Dash-Dot-Dot). 0 = Dot, 1 = Dash for letters
@@ -36,7 +36,7 @@ bool enableDIYsensor = false;
 bool debugging = true;
 
 void setup() {
-  myservo.attach(D3);
+  myservo.attach(servoPin);
   // initialize the pushbutton pin as an input and servo as output:
   pinMode(buttonPin, INPUT);
   pinMode(servoPin, OUTPUT);
@@ -52,8 +52,9 @@ void loop() {
   // read the state of the pushbutton value:
   if (!enableDIYsensor) buttonState = digitalRead(buttonPin);
 
-  //Code in the if and else-if part will only be executed once after the button was pressed/released
+  // Input with Button
   if (!enableDIYsensor) {
+    //Code in the if and else-if part will only be executed once after the button was pressed/released
     if (!wasPressed && buttonState == HIGH) {
       onPress();
       wasPressed = true;
@@ -62,14 +63,14 @@ void loop() {
       onRelease();
       wasPressed = false;
     }
-  } else {
+  }
+  // Input with DIY Sensor
+  else {
     if (!wasPressed && capValue >= capThreshhold) {
-      Serial.println("press");
       onPress();
       wasPressed = true;
     }
     else if (wasPressed && capValue < capThreshhold) {
-      Serial.println("release");
       onRelease();
       wasPressed = false;
     }
@@ -79,7 +80,7 @@ void loop() {
 void onPress() {
   timestampOnPress = millis(); //Gets time since execution start and current time in ms
 
-  if (firstPress) { //Ignore the release time between program start and the first press. Only start after the first press was done
+  if (!firstPress) { //Ignore the release time between program start and the first press. Only start after the first press was done
     float releaseTime = millis() - timestampOnRelease; //get release time in ms by subtracting the timestamp from the current time
     if (debugging) {
       Serial.print("Release Time: ");
@@ -92,19 +93,23 @@ void onPress() {
       //TODO How shall we handle the times between "betweenSymbols"/"betweenLetters" and "betweenLetters"/"betweenWords"?
       if (releaseTime <= betweenSymbols) {
         //Nothing needs to happen
-      } else if ((releaseTime > betweenSymbols) && (releaseTime <= betweenLetters)) {
+      }
+      else if ((releaseTime > betweenSymbols) && (releaseTime <= betweenLetters)) {
         evalLetter();
-      } else if ((releaseTime > betweenLetters) && (releaseTime <= betweenHex)) {
+      }
+      else if ((releaseTime > betweenLetters) && (releaseTime <= betweenHex)) {
         evalWord();
       }
       else if (releaseTime > betweenLetters) {
-        firstPress = true;
         TranslateToHex();
+        HexTurn();
+        resetHolders();
+        firstPress = true;
       }
     }
   }
 
-  firstPress = true;
+  firstPress = false;
 }
 
 void onRelease() {
@@ -133,10 +138,11 @@ void onRelease() {
 void evalWord() {
   //Eval the last input as a letter
   evalLetter();
+  //Add a space between words but not before the first one
+  if (strlen(sentenceHolder) != 0) 
+    strcat(sentenceHolder, " ");
   //Add word to sentence
   strcat(sentenceHolder, wordHolder);
-  //Add a space between words
-  strcat(sentenceHolder, " ");
 
   //Clear the wordHolder. (Maybe you can remove the for loop as "wordHolder[0] = '\0';" does the same job later.
   for (int i = 1; i < wordSize; i++)
@@ -231,10 +237,8 @@ void evalLetter() {
   } else if (strcmp(letterHolder, "11111") == 0) {
     letter = '0';
   } else {
-    //ERROR
-    if (debugging) {
-      Serial.print("Fehler!! >:( \n");      //A combination that isn't a word. How shall we handle this? Stop the program? Use "?" as a placeholder for "This letter doesn't exist"?
-    }
+    //WARNING: A combination that isn't a word. How shall we handle this? Stop the program? Use "?" as a placeholder for "This letter doesn't exist"?
+    if (debugging) Serial.println("Unknown Morse Combination. Adding '?' to word");
     letter = '?';
   }
 
@@ -278,7 +282,6 @@ void TranslateToHex() { //Translate the morse code word into hex.
   hexHolder[j + 1] = '\0'; //Add Null at the end so we know when the string is completed
 
   Serial.println(hexHolder);
-  HexTurn();
 }
 
 void HexTurn() {
@@ -373,6 +376,31 @@ void HexTurn() {
       hexHolder[0] = '\0';
       break;
     }
-
   }
+}
+
+void resetHolders() {
+  for (int i = 1; i < letterSize; i++)
+  {
+    letterHolder[i] = ' ';
+  }
+  letterHolder[0] = '\0';
+
+  for (int i = 1; i < wordSize; i++)
+  {
+    wordHolder[i] = ' ';
+  }
+  wordHolder[0] = '\0';
+
+  for (int i = 1; i < sentenceSize; i++)
+  {
+    sentenceHolder[i] = ' ';
+  }
+  sentenceHolder[0] = '\0';
+
+  for (int i = 1; i < hexSize; i++)
+  {
+    hexHolder[i] = ' ';
+  }
+  hexHolder[0] = '\0';
 }
