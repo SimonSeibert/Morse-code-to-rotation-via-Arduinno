@@ -54,7 +54,7 @@ public class ArduinoCommunicator : MonoBehaviour
     /// <param name="message">Message you want to send</param>
     public void sendMessageToArdu(string message)
     {
-        serial.Write(message);
+        serial.WriteLine(message + "!");
     }
 
     /// <summary>

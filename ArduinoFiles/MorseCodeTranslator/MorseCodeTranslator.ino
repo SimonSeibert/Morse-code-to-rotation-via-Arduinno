@@ -35,7 +35,7 @@ const int capThreshhold = 400;        // Threshold for when capacitive reading r
 long capValue;                        // Value from capacitive reading
 
 bool enableDIYsensor = true;
-bool debugging = true;
+bool debugging = false;
 
 void setup() {
   myservo.attach(servoPin);
@@ -47,6 +47,17 @@ void setup() {
 }
 
 void loop() {
+  //Receive message from Unity
+  if (!debugging && Serial.available()) {
+    String _unityMessage = Serial.readStringUntil('\n');
+    delay(3000);
+    Serial.println(_unityMessage);
+    const char* unityMessage = _unityMessage.c_str();     //Convert String to char* so we can work with it
+    if (unityMessage[strlen(unityMessage)] == '!') {      //Unity messages end with '!'
+      delay(3000);
+      Serial.println(unityMessage);
+    }
+  }
   // Small delay to keep processing effort lower
   delay(20);
   // read value of capacitive foil
@@ -141,7 +152,7 @@ void evalWord() {
   //Eval the last input as a letter
   evalLetter();
   //Add a space between words but not before the first one
-  if (strlen(sentenceHolder) != 0) 
+  if (strlen(sentenceHolder) != 0)
     strcat(sentenceHolder, " ");
   //Add word to sentence
   strcat(sentenceHolder, wordHolder);
