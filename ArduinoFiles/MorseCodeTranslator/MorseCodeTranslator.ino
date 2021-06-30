@@ -1,9 +1,12 @@
 #include <Servo.h>
 #include <CapacitiveSensor.h>
 
+//PINS
 const int buttonPin = 16;           // the number of the pushbutton pin
 const int servoPin = 2;             // the number of the Servo pin
+const int outputLEDpin =  14;       // the number of the output LED pin
 
+//MORSE TIMES
 const float dot = 300;              // Time in ms
 const float dash = 900;             // 3*dot
 const float betweenSymbols = 300;   // 2*dot
@@ -11,37 +14,45 @@ const float betweenLetters = 900;   // 4*dot
 const float betweenWords = 2100;    // 6*dot
 const float betweenHex = 3000;      //10*dot
 
+//HOLDER SIZES
 const int letterSize = 100;
 const int wordSize = 100;
 const int sentenceSize = 100;
 const int hexSize = 1000;
 
-int buttonState = 0;              // variable for reading the pushbutton status
-bool wasPressed = false;          // Use this bool to see if the button was pressed. After it was pressed it will be put on false. That way the if else part in void loop() will only be executed one time.
-bool firstPress = true;          // See explenation when it is used
-float timestampOnPress = 0;       // timestampOnPress is used to get presstime
-float timestampOnRelease = 0;     // timestampOnRelease is used to get releasetime
+//HOLDERS
 char letterHolder[letterSize];    // Holds current morse code word (e.g. Dash-Dot-Dot). 0 = Dot, 1 = Dash for letters
 char wordHolder[wordSize];        // Holds letters for words
 char sentenceHolder[sentenceSize];// Holds words for sentences
 char hexHolder[hexSize];
 
+//SERVO
 Servo myservo;
 
+//CAPACITIVE SENSOR
 const int capOutPin = 4;
 const int capInPin = 2;
 CapacitiveSensor Sensor = CapacitiveSensor(capInPin, capOutPin);
 const int capThreshhold = 400;        // Threshold for when capacitive reading reading counts as a press or a release
 long capValue;                        // Value from capacitive reading
 
-bool enableDIYsensor = true;
-bool debugging = false;
+//MISCELANEOUS
+int buttonState = 0;              // variable for reading the pushbutton status
+bool wasPressed = false;          // Use this bool to see if the button was pressed. After it was pressed it will be put on false. That way the if else part in void loop() will only be executed one time.
+bool firstPress = true;          // See explenation when it is used
+float timestampOnPress = 0;       // timestampOnPress is used to get presstime
+float timestampOnRelease = 0;     // timestampOnRelease is used to get releasetime
+
+bool enableLEDoutput = true;
+bool enableDIYsensor = false;
+bool debugging = true;
 
 void setup() {
   myservo.attach(servoPin);
-  // initialize the pushbutton pin as an input and servo as output:
   pinMode(buttonPin, INPUT);
   pinMode(servoPin, OUTPUT);
+  pinMode(outputLEDpin, OUTPUT);
+  
   // initialize serial communication for Debugging:
   Serial.begin(9600);
 }
@@ -114,8 +125,11 @@ void onPress() {
         evalWord();
       }
       else if (releaseTime > betweenLetters) {
-        TranslateToHex();
-        HexTurn();
+        evalWord(); //Eval last word
+        if(enableLEDoutput)
+          morseSentence(sentenceHolder); //LED output
+        TranslateToHex(); 
+        HexTurn(); //Servo output
         resetHolders();
         firstPress = true;
       }
@@ -274,8 +288,6 @@ void evalLetter() {
 
 
 void TranslateToHex() { //Translate the morse code word into hex.
-  evalWord();
-
   int i, j;         //Two counter vars we need later
 
   //converting str into Hex and add it into strH
@@ -297,72 +309,73 @@ void TranslateToHex() { //Translate the morse code word into hex.
   Serial.println(hexHolder);
 }
 
+//Turns the servo motor
 void HexTurn() {
-  int turnTime = 500;
+  int turnWaitTime = 500;
   for (int i = 0; i < hexSize; i++) {
     if (hexHolder[i] == '0') {
       myservo.write(11);
-      delay(turnTime);
+      delay(turnWaitTime);
     }
     if (hexHolder[i] == '1') {
       myservo.write(22);
-      delay(turnTime);
+      delay(turnWaitTime);
     }
     if (hexHolder[i] == '2') {
       myservo.write(33);
-      delay(turnTime);
+      delay(turnWaitTime);
     }
     if (hexHolder[i] == '3') {
       myservo.write(44);
-      delay(turnTime);
+      delay(turnWaitTime);
     }
     if (hexHolder[i] == '4') {
       myservo.write(55);
-      delay(turnTime);
+      delay(turnWaitTime);
     }
     if (hexHolder[i] == '5') {
       myservo.write(66);
-      delay(turnTime);
+      delay(turnWaitTime);
     }
     if (hexHolder[i] == '6') {
       myservo.write(77);
-      delay(turnTime);
+      delay(turnWaitTime);
     }
     if (hexHolder[i] == '7') {
       myservo.write(88);
-      delay(turnTime);
+      delay(turnWaitTime);
     }
     if (hexHolder[i] == '8') {
       myservo.write(99);
-      delay(turnTime);
+      delay(turnWaitTime);
     }
     if (hexHolder[i] == '9') {
       myservo.write(110);
-      delay(turnTime);
+      delay(turnWaitTime);
     }
     if (hexHolder[i] == 'A') {
       myservo.write(121);
-      delay(turnTime);
+      delay(turnWaitTime);
     }
     if (hexHolder[i] == 'B') {
       myservo.write(132);
-      delay(turnTime);
+      delay(turnWaitTime);
     }
     if (hexHolder[i] == 'C') {
       myservo.write(143);
-      delay(turnTime);
+      delay(turnWaitTime);
     }
     if (hexHolder[i] == 'D') {
       myservo.write(154);
-      delay(turnTime);
+      delay(turnWaitTime);
     }
     if (hexHolder[i] == 'E') {
       myservo.write(165);
-      delay(turnTime);
+      delay(turnWaitTime);
     }
     if (hexHolder[i] == 'F') {
       myservo.write(176);
-      delay(turnTime);
+      delay(turnWaitTime);
     }
     if (hexHolder[i] == '_') {
       myservo.write(0);
@@ -392,6 +405,7 @@ void HexTurn() {
   }
 }
 
+//Resets all holders so you can start again
 void resetHolders() {
   for (int i = 1; i < letterSize; i++)
   {
@@ -416,4 +430,98 @@ void resetHolders() {
     hexHolder[i] = ' ';
   }
   hexHolder[0] = '\0';
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////// LED OUTPUT ////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+
+//This function receives a string and outputs the corresponding morse code message
+void morseSentence(char *sentence) {
+  //Go through each character until the end is reached
+  for (int i = 0; i < strlen(sentence); i++) {
+    //For debugging
+    if (debugging) {
+      Serial.print("Now morseing letter '"); Serial.print(sentence[i]); Serial.println("'");
+    }
+    //Morse the letter
+    morse(sentence[i]);
+  }
+}
+
+//This function takes a boolean and outputs a morse symbol. True is dot, false is dash
+void blink(bool isShort) {
+  //Dot
+  if (isShort) {
+    digitalWrite(outputLEDpin, HIGH);
+    delay(dot);
+    digitalWrite(outputLEDpin, LOW);
+    delay(betweenSymbols);
+  }
+  //Dash
+  else {
+    digitalWrite(outputLEDpin, HIGH);
+    delay(dash);
+    digitalWrite(outputLEDpin, LOW);
+    delay(betweenSymbols);
+  }
+}
+
+void doDot() {
+  blink(true);
+}
+
+void doDash() {
+  blink(false);
+}
+
+// This function takes a character and outputs the morse code for that letter
+void morse(char c) {
+  switch (c) {
+    case 'A': case 'a': doDot(); doDash(); break;
+    case 'B': case 'b': doDash(); doDot(); doDot(); doDot(); break;
+    case 'C': case 'c': doDash(); doDot(); doDash(); doDot(); break;
+    case 'D': case 'd': doDash(); doDot(); doDot(); break;
+    case 'E': case 'e': doDot(); break;
+    case 'F': case 'f': doDot(); doDot(); doDash(); doDot(); break;
+    case 'G': case 'g': doDash(); doDash(); doDot(); break;
+    case 'H': case 'h': doDot(); doDot(); doDot(); doDot(); break;
+    case 'I': case 'i': doDot(); doDot(); break;
+    case 'J': case 'j': doDot(); doDash(); doDash(); doDash(); break;
+    case 'K': case 'k': doDash(); doDot(); doDash(); break;
+    case 'L': case 'l': doDot(); doDash(); doDot(); doDot(); break;
+    case 'M': case 'm': doDash(); doDash(); break;
+    case 'N': case 'n': doDash(); doDot(); break;
+    case 'O': case 'o': doDash(); doDash(); doDash(); break;
+    case 'P': case 'p': doDot(); doDash(); doDash(); doDot(); break;
+    case 'Q': case 'q': doDash(); doDash(); doDot(); doDash(); break;
+    case 'R': case 'r': doDot(); doDash(); doDot(); break;
+    case 'S': case 's': doDot(); doDot(); doDot(); break;
+    case 'T': case 't': doDash(); break;
+    case 'U': case 'u': doDot(); doDot(); doDash(); break;
+    case 'V': case 'v': doDot(); doDot(); doDot(); doDash(); break;
+    case 'W': case 'w': doDot(); doDash(); doDash(); break;
+    case 'X': case 'x': doDash(); doDot(); doDot(); doDash(); break;
+    case 'Y': case 'y': doDash(); doDot(); doDash(); doDash(); break;
+    case 'Z': case 'z': doDash(); doDash(); doDot(); doDot(); break;
+    case '1': doDot(); doDash(); doDash(); doDash(); doDash(); break;
+    case '2': doDot(); doDot(); doDash(); doDash(); doDash(); break;
+    case '3': doDot(); doDot(); doDot(); doDash(); doDash(); break;
+    case '4': doDot(); doDot(); doDot(); doDot(); doDash(); break;
+    case '5': doDot(); doDot(); doDot(); doDot(); doDot(); break;
+    case '6': doDash(); doDot(); doDot(); doDot(); doDot(); break;
+    case '7': doDash(); doDash(); doDot(); doDot(); doDot(); break;
+    case '8': doDash(); doDash(); doDash(); doDot(); doDot(); break;
+    case '9': doDash(); doDash(); doDash(); doDash(); doDot(); break;
+    case '0': doDash(); doDash(); doDash(); doDash(); doDash(); break;
+    // The space means that a word is done. The time between words is calculated like this because a das/dot always has the delay "betweenSymbols" at the end.
+    // Additionally (you can see it after the switch case) a delay of "betweenLetters" is done after each letter. This is why the delay between words is calculated like this.
+    // It all adds up to the value of "betweenWords"
+    case ' ': delay(betweenWords - betweenLetters - betweenSymbols); break;
+    default: Serial.println("Char not supported for LED output!"); break;
+  }
+
+  //After that the end of a letter is reached. The remaining pause time is calculated like this, because a dash/dot always has the delay "betweenSymbols" at the end.
+  delay(betweenLetters - betweenSymbols);
 }
