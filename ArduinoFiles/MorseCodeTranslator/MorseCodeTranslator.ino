@@ -9,9 +9,9 @@ const int outputLEDpin =  14;       // the number of the output LED pin
 //MORSE TIMES
 const float dot = 300;              // Time in ms
 const float dash = 900;             // 3*dot
-const float betweenSymbols = 300;   // 2*dot
-const float betweenLetters = 900;   // 4*dot
-const float betweenWords = 2100;    // 6*dot
+const float betweenSymbols = 600;   // 2*dot
+const float betweenLetters = 1200;  // 4*dot
+const float betweenWords = 1800;    // 6*dot
 const float betweenHex = 3000;      //10*dot
 
 //HOLDER SIZES
@@ -44,7 +44,7 @@ float timestampOnPress = 0;       // timestampOnPress is used to get presstime
 float timestampOnRelease = 0;     // timestampOnRelease is used to get releasetime
 
 bool enableLEDoutput = true;
-bool enableDIYsensor = false;
+bool enableDIYsensor = true;
 bool debugging = true;
 
 void setup() {
@@ -52,7 +52,7 @@ void setup() {
   pinMode(buttonPin, INPUT);
   pinMode(servoPin, OUTPUT);
   pinMode(outputLEDpin, OUTPUT);
-  
+
   // initialize serial communication for Debugging:
   Serial.begin(9600);
 }
@@ -126,9 +126,9 @@ void onPress() {
       }
       else if (releaseTime > betweenLetters) {
         evalWord(); //Eval last word
-        if(enableLEDoutput)
+        if (enableLEDoutput)
           morseSentence(sentenceHolder); //LED output
-        TranslateToHex(); 
+        TranslateToHex();
         HexTurn(); //Servo output
         resetHolders();
         firstPress = true;
