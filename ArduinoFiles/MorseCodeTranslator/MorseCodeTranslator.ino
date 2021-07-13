@@ -29,7 +29,7 @@ char hexHolder[hexSize];
 //SERVO
 Servo myservo;
 
-//CAPACITIVE SENSOR
+//CAPACITIVE SENSOR (DIY)
 const int capOutPin = 4;
 const int capInPin = 2;
 CapacitiveSensor Sensor = CapacitiveSensor(capInPin, capOutPin);
@@ -53,22 +53,24 @@ void setup() {
   pinMode(servoPin, OUTPUT);
   pinMode(outputLEDpin, OUTPUT);
 
+  // attachInterrupt(digitalpintointerrupt(12), press(), RISING);
+  
   // initialize serial communication for Debugging:
   Serial.begin(9600);
 }
 
 void loop() {
   //Receive message from Unity
-  if (!debugging && Serial.available()) {
-    String _unityMessage = Serial.readStringUntil('\n');
-    delay(3000);
-    Serial.println(_unityMessage);
-    const char* unityMessage = _unityMessage.c_str();     //Convert String to char* so we can work with it
-    if (unityMessage[strlen(unityMessage)] == '!') {      //Unity messages end with '!'
-      delay(3000);
-      Serial.println(unityMessage);
-    }
-  }
+  //if (!debugging && Serial.available()) {
+  //  String _unityMessage = Serial.readStringUntil('\n');
+  //  delay(3000);
+  //  Serial.println(_unityMessage);
+  //  const char* unityMessage = _unityMessage.c_str();     //Convert String to char* so we can work with it
+  //  if (unityMessage[strlen(unityMessage)] == '!') {      //Unity messages end with '!'
+  //    delay(3000);
+  //    Serial.println(unityMessage);
+  //  }
+  //}
   // Small delay to keep processing effort lower
   delay(20);
   // read value of capacitive foil
@@ -290,7 +292,7 @@ void evalLetter() {
 void TranslateToHex() { //Translate the morse code word into hex.
   int i, j;         //Two counter vars we need later
 
-  //converting str into Hex and add it into strH
+  //converting str into Hex and add it into hexHolder
   //In Ascii, every letter corresponds to 2 Hexadecimal numbers.
   //Thats why we count j+=2 but we need also a counter that increments by 1 which is i
   //We go through each charactor in our stirng
@@ -302,9 +304,15 @@ void TranslateToHex() { //Translate the morse code word into hex.
     //Every converted char gets then added to strH.
     sprintf((char*) hexHolder + j, "%02X", sentenceHolder[i]);
     strcat(hexHolder, "_");
+
+    //Example: SentenceHolder = "ABC"
+    //1: "41_", j=0, i=0;
+    //2: "41_42_", j=3, i=1;
+    //3: "41_42_43_", j=6, i=2;
+    //...
   }
   strcat(hexHolder, ".");   //Point at end of sentence
-  hexHolder[j + 1] = '\0'; //Add Null at the end so we know when the string is completed
+  hexHolder[j + 1] = '\0'; //Add Null at the end so we know when the string is completed, i didn't add the \0 with strcat because it crashes for some unknown reason.
 
   Serial.println(hexHolder);
 }
