@@ -54,7 +54,7 @@ public class ArduinoCommunicator : MonoBehaviour
     /// <param name="message">Message you want to send</param>
     public void sendMessageToArdu(string message)
     {
-        serial.WriteLine(message + "!");
+        serial.WriteLine(message);
     }
 
     /// <summary>
@@ -62,7 +62,7 @@ public class ArduinoCommunicator : MonoBehaviour
     /// </summary>
     void setup()
     {
-        //Defina a new serial port with the com port and baud rate
+        //Define a new serial port with the com port and baud rate
         serial = new SerialPort("COM" + comPort, baudRate);
 
         //Small timeout between read accesses
