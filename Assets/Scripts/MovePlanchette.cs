@@ -67,7 +67,7 @@ public class MovePlanchette : MonoBehaviour
     {
         yield return new WaitForSeconds(parameter.Item2); // Waits a specified amount of time before moving
         targetTmp = parameter.Item1;
-        scratch.Play();
+        scratch.Play(); //Play scratch sound effect
     }
 
     /// <summary>
