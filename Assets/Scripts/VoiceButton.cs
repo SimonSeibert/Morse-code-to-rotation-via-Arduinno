@@ -10,13 +10,13 @@ public class VoiceButton : MonoBehaviour
 {
     public bool movePlanchetteAfterTalking;
     public MovePlanchette planchette;
+    public ArduinoCommunicator arduinoCommunicator;
 
     private Button b;
     private Text bText;
 
     private DictationRecognizer dictation;
 
-    private ArduinoCommunicator arduinoCommunicator;
 
     void Start()
     {
