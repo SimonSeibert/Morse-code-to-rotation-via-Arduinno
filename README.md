@@ -18,8 +18,6 @@ Output:
 - Servo motor rotation
 - Blinking LED 
 - Unity Ouiji-Board
-	
-*(Doesn't support Unity to Arduino communication yet)*
 
 <h2>Hardware</h2>
 
