@@ -42,4 +42,9 @@ Output:
 The project also contains a Unity implementation. Connect it to the same Port and Baud rate and you're ready to go. You can do the input on the Arduino and get an output in unity. The output shows a Ouiji-Board with hexadecimal numbers. A planchette will then traverse the message. You can also say a message using speech to text (with windows speech).
 
 ![Inside Unity](https://user-images.githubusercontent.com/35760266/124633213-569bcd80-de85-11eb-8536-eccb636a62fb.png)
+
+<h2>Unity Arduino Communication</h2>
+
+There is also a AtU.ino file included with which you can test the communication between Arduino and Unity and vis versa. You can send a message from Arduino which can be received in Unity. Additionally you can send a Message from Unity to the Arduino which will make the internal LED blink.
+
  
