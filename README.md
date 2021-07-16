@@ -37,6 +37,13 @@ Output:
 
 ![Hardware Circuit](https://user-images.githubusercontent.com/35760266/124632943-13415f00-de85-11eb-847b-ab33e4d99759.png)
 	
+ <h2>Software</h2>
+ 
+ - Unity 2020.3.8f1
+ - Arduino IDE
+	- <CapacitiveSensor.h> -> Capacitive Sensor 0.5.1 by Paul Stoffregen
+	- <Servo.h>
+
 <h2>Unity Integration</h2>
 
 The project also contains a Unity implementation. Connect it to the same Port and Baud rate and you're ready to go. You can do the input on the Arduino and get an output in unity. The output shows a Ouiji-Board with hexadecimal numbers. A planchette will then traverse the message. You can also say a message using speech to text (with windows speech).
@@ -46,5 +53,3 @@ The project also contains a Unity implementation. Connect it to the same Port an
 <h2>Unity Arduino Communication</h2>
 
 There is also a AtU.ino file included with which you can test the communication between Arduino and Unity and vis versa. You can send a message from Arduino which can be received in Unity. Additionally you can send a Message from Unity to the Arduino which will make the internal LED blink.
-
- 
