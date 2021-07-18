@@ -12,7 +12,7 @@ void loop() {
   //Receiving value
   if (Serial.available()) {
     String s = Serial.readStringUntil('\n');
-    Serial.println("> Received:" + String(s));
+    //Serial.println("> Received:" + String(s));
 
     if (String(s) == "blink") {
       digitalWrite(LED_BUILTIN, HIGH);
